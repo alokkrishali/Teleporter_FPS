@@ -8,9 +8,10 @@ public class EnemyAi : MonoBehaviour
     [SerializeField] float Speed = 30;
     public bool CanMove = false;
     Transform thisTransform;
-    private Vector3 currentTargetPos;
-    private int HelthValue = 3;
     [SerializeField]
+    private Transform startPos;
+    private Transform currentTarget;
+    private int HelthValue = 3;
     private Transform _playerTr;
     // Start is called before the first frame update
     Animator enemyAnim;
@@ -18,9 +19,7 @@ public class EnemyAi : MonoBehaviour
     [SerializeField] float rotationSpeed = 10;
     void Start()
     {
-        HelthValue = 3;
         thisTransform = GetComponent<Transform>();
-        Speed = Random.Range(2, Speed);
         enemyAnim = GetComponent<Animator>();
         enemyAnim.SetInteger("State", 0);
     }
@@ -28,6 +27,20 @@ public class EnemyAi : MonoBehaviour
     public void SetPlayerRef(Transform playerTr)
     {
         _playerTr = playerTr;
+        if (_playerTr == null)
+        {
+            IsPlayerNear = false;
+            currentTarget = startPos;
+            enemyAnim.SetInteger("State", 1);
+            CanMove = true;
+        }
+        else
+        {
+            CheckDistance = true;
+            IsPlayerNear = true;
+            CheckPlayerPos();
+            currentTarget = _playerTr;
+        }
     }
 
     public void ReduceHelth()
@@ -38,37 +51,46 @@ public class EnemyAi : MonoBehaviour
             enemyAnim.SetBool("dead", true);
         }
     }
-
-
     bool IsPlayerNear = false, CheckDistance = true;
+
+    public void CheckPlayerPos()
+    {
+        if (checkPlayerPos != null)
+            StopCoroutine(checkPlayerPos);
+        checkPlayerPos = StartCoroutine(CheckPlayer());
+    }
+    float playerDistance = 0;
     IEnumerator CheckPlayer()
     {
-        while(CheckDistance)
+        while (CheckDistance)
         {
             if(_playerTr != null)
+                playerDistance = Vector3.SqrMagnitude(thisTransform.position - _playerTr.position);
+            Debug.Log("Disdtance - "+ playerDistance);
+            if (playerDistance < 36)
             {
-                if (Vector3.SqrMagnitude(thisTransform.position - _playerTr.position) < 9)
-                {
-                    IsPlayerNear = true;
-                    CanMove = false;
-                    enemyAnim.SetInteger("State", 2);
-                }
-                else
-                {
-                    IsPlayerNear = false;
-                    enemyAnim.SetInteger("State", 1);
-                }
+                CanMove = false;
+                enemyAnim.SetInteger("State", 2);
             }
-            
-            yield return new WaitForSeconds(2);
+            else
+            {
+                CanMove = true;
+                enemyAnim.SetInteger("State", 1);
+            }
+                yield return new WaitForSeconds(1);
         }
     }
 
+    private void MovePlayerTowards()
+    {
+        Quaternion lookAt = Quaternion.LookRotation(currentTarget.position - thisTransform.position);
+        thisTransform.rotation = Quaternion.Slerp(thisTransform.rotation, lookAt, Time.deltaTime * 10);
+        MoveTowardsPlayer();
+    }
     [SerializeField] float moveSpeed = 30;
     void MoveTowardsPlayer()
     {
-        if (_playerTr == null) return;
-            thisTransform.position = Vector3.MoveTowards(thisTransform.position, _playerTr.position, Time.deltaTime* moveSpeed);
+       thisTransform.position = Vector3.MoveTowards(thisTransform.position, currentTarget.position, Time.deltaTime* moveSpeed);
     }
     // Update is called once per frame
     Coroutine checkPlayerPos;
@@ -76,19 +98,7 @@ public class EnemyAi : MonoBehaviour
     {
         if(CanMove)
         {
-            if (_playerTr == null) return;
-            Quaternion lookAt = Quaternion.LookRotation(_playerTr.position - thisTransform.position);
-            thisTransform.rotation = Quaternion.Slerp(thisTransform.rotation, lookAt, Time.deltaTime*10);
-            MoveTowardsPlayer();
-            checkPlayerPos = StartCoroutine(CheckPlayer());
-        }
-        else
-        {
-            if (checkPlayerPos != null)
-            {
-                StopCoroutine(checkPlayerPos);
-                checkPlayerPos = null;
-            }
+            MovePlayerTowards();
         }
     }
 

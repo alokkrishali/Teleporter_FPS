@@ -42,6 +42,8 @@ public class PlayerDetector : MonoBehaviour
         if(other.gameObject.CompareTag("Player"))
         {
             EnemyAi mEnemy = null;
+            Debug.LogError("Enter in Range");
+
             PlayerNearBy = true;
             //Debug.LogError("Enter in Range");
             for (int i = 0; i < enemy.Count; i++)
@@ -62,7 +64,7 @@ public class PlayerDetector : MonoBehaviour
         {
             EnemyAi mEnemy = null;
             PlayerNearBy = true;
-            //Debug.LogError("Enter in Range");
+            Debug.LogError("Enter in Range");
             for (int i = 0; i < enemy.Count; i++)
             {
                 mEnemy = enemy[i].GetComponent<EnemyAi>();
