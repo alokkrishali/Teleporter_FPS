@@ -24,6 +24,7 @@ public class PowerUp : MonoBehaviour
         if(other.gameObject.CompareTag("Player"))
         {
             Debug.Log("got power Up");
+            ScoreManager.instance.UpdatePowerUps(1);
         }
     }
 }

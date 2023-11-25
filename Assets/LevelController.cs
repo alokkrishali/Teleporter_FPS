@@ -4,52 +4,51 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
-    public LevelController instance;
+    public static LevelController instance;
 
-    List<Vector3> powerUps;
-    List<Vector3> Enemies;
-    List<Vector3> Obstacales;
+    [SerializeField] List<GameObject> Levels;
+    [SerializeField] List<GameObject> Points;
 
-    [SerializeField] List<Level> levels;
 
+    private int LevelNumber = 0;
     private void Awake()
     {
         if (instance == null)
             instance = this;
     }
-    void Start()
+
+    public int GetLevel()
     {
-        powerUps = new List<Vector3>();
-        Enemies = new List<Vector3>();
-        Obstacales = new List<Vector3>();
+        return LevelNumber;
     }
 
     public void SetLevel(int levelIndex)
     {
-        powerUps.Clear();
-        Enemies.Clear();
-        Obstacales.Clear();
-        for(int i = 0;i<levels[levelIndex].PopUps.Count;i++)
-        {
-            powerUps[i] = levels[levelIndex].PopUps[i].position;
-        }
-        for (int i = 0; i < levels[levelIndex].Enemies.Count; i++)
-        {
-            Enemies[i] = levels[levelIndex].Enemies[i].position;
-        }
-        for (int i = 0; i < levels[levelIndex].Obstacales.Count; i++)
-        {
-            Obstacales[i] = levels[levelIndex].Obstacales[i].position;
-        }
-    }
-
-    private void SetLevelObjects()
-    {
-
-    }
-    // Update is called once per frame
-    void Update()
-    {
+        if (levelIndex >= 3) return;
+        LevelNumber = levelIndex;
         
+    }
+
+    public void ShowLevel()
+    {
+        DisableLeves();
+        DisablePoints();
+        Levels[LevelNumber].SetActive(true);
+        Points[LevelNumber].SetActive(true);
+    }
+    private void DisableLeves()
+    {
+        for (int i=0;i< Levels.Count;i++)
+        {
+            Levels[i].SetActive(false);
+        }
+
+    }
+    private void DisablePoints()
+    {
+        for (int i = 0; i < Points.Count; i++)
+        {
+            Points[i].SetActive(false);
+        }
     }
 }

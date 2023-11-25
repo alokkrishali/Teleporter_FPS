@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class EnemyAi : MonoBehaviour
 {
-    //[SerializeField] Vector3 stratPos, TargetPos;
+    [SerializeField] int EnemyPoints = 5;
     [SerializeField] float Speed = 30;
     public bool CanMove = false;
     Transform thisTransform;
     [SerializeField]
     private Transform startPos;
     private Transform currentTarget;
+    [SerializeField]
+    float attackingThresold = 36;
+    [SerializeField]
     private int HelthValue = 3;
     private Transform _playerTr;
     // Start is called before the first frame update
@@ -29,12 +32,17 @@ public class EnemyAi : MonoBehaviour
         _playerTr = playerTr;
         if (_playerTr == null)
         {
-            Invoke("GoBackToStartPos", 1);
+            Debug.Log("Player is away from Enemy");
+            CheckDistance = false;
             IsPlayerNear = false;
             currentTarget = startPos;
+            enemyAnim.SetInteger("State", 1);
+            CanMove = true;
+            Invoke("GoBackToStartPos", 4);
         }
         else
         {
+            Debug.Log("Player is near to Enemy");
             CheckDistance = true;
             IsPlayerNear = true;
             CheckPlayerPos();
@@ -44,8 +52,9 @@ public class EnemyAi : MonoBehaviour
     }
     private void GoBackToStartPos()
     {
-        enemyAnim.SetInteger("State", 1);
-        CanMove = true;
+        enemyAnim.SetInteger("State", 0);
+        CanMove = false;
+        currentTarget = null;
     }
     public void ReduceHelth()
     {
@@ -53,6 +62,7 @@ public class EnemyAi : MonoBehaviour
         if (HelthValue <= 0)
         {
             enemyAnim.SetBool("dead", true);
+            ScoreManager.instance.UpdateScore(5);
         }
     }
     bool IsPlayerNear = false, CheckDistance = true;
@@ -68,11 +78,11 @@ public class EnemyAi : MonoBehaviour
     {
         while (CheckDistance)
         {
-            if(_playerTr != null)
-                playerDistance = Vector3.SqrMagnitude(thisTransform.position - _playerTr.position);
+            playerDistance = Vector3.SqrMagnitude(thisTransform.position - _playerTr.position);
             Debug.Log("Disdtance - "+ playerDistance);
-            if (playerDistance < 36)
+            if (playerDistance < attackingThresold)
             {
+                Debug.Log("attackingThresold - " + attackingThresold);
                 CanMove = false;
                 enemyAnim.SetInteger("State", 2);
             }
