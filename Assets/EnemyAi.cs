@@ -29,10 +29,9 @@ public class EnemyAi : MonoBehaviour
         _playerTr = playerTr;
         if (_playerTr == null)
         {
+            Invoke("GoBackToStartPos", 1);
             IsPlayerNear = false;
             currentTarget = startPos;
-            enemyAnim.SetInteger("State", 1);
-            CanMove = true;
         }
         else
         {
@@ -40,9 +39,14 @@ public class EnemyAi : MonoBehaviour
             IsPlayerNear = true;
             CheckPlayerPos();
             currentTarget = _playerTr;
+            enemyAnim.SetInteger("State", 1);
         }
     }
-
+    private void GoBackToStartPos()
+    {
+        enemyAnim.SetInteger("State", 1);
+        CanMove = true;
+    }
     public void ReduceHelth()
     {
         HelthValue--;
@@ -72,12 +76,7 @@ public class EnemyAi : MonoBehaviour
                 CanMove = false;
                 enemyAnim.SetInteger("State", 2);
             }
-            else
-            {
-                CanMove = true;
-                enemyAnim.SetInteger("State", 1);
-            }
-                yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(1);
         }
     }
 
