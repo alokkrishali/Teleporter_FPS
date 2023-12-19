@@ -45,6 +45,7 @@ public class UiManager : MonoBehaviour
     }
     public void OnPlayClick()
     {
+        AudioManager.instance.PlaySound("GamePlay");
         LevelController.instance.SetLevel(LevelController.instance.GetLevel());
         LevelController.instance.ShowLevel();
         OnGamePlay();
@@ -87,6 +88,7 @@ public class UiManager : MonoBehaviour
     public void OnMenuClick()
     {
         ShowMenu();
+        AudioManager.instance.PlaySound("Menu");
     }
 
     
@@ -94,6 +96,7 @@ public class UiManager : MonoBehaviour
     {
         DisableAllScreen();
         screens[1].SetActive(true);
+        AudioManager.instance.PlaySound("Menu");
     }
 
     public void OnGamePlay()
@@ -108,8 +111,8 @@ public class UiManager : MonoBehaviour
         else
             nextBtn.interactable = true;
         DisableAllScreen();
-        LevelCompleteScore.text = ScoreManager.instance.GetScore().ToString();
-        LevelCompletePowerUps.text = ScoreManager.instance.GetPowerUps().ToString();
+        LevelCompleteScore.text = "Score : "+ScoreManager.instance.GetScore().ToString();
+        LevelCompletePowerUps.text = " Points : "+ScoreManager.instance.GetPowerUps().ToString();
         screens[2].SetActive(true);
     }
 
@@ -148,6 +151,8 @@ public class UiManager : MonoBehaviour
                         DisableAllScreen();
                         screens[1].SetActive(true);
                         IsLoading = false;
+                        AudioManager.instance.PlaySound("Menu");
+
                     }
         }
     }
